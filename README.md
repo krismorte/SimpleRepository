@@ -4,15 +4,23 @@ This project will help you to implementing the Repository Pattern just extended 
 
 
 
-Your entities needs to extends one of the classes `Identity` or `IdentityAndAudit`. The firts just implements the Id attribute the second 
-implements the Id and the datetime atributes for audit matters.
+Your entities needs to extends one of the classes `Identity` or `IdentityAndAudit`. The firts just implements the `Id` attribute the second implements the `Id` and the datetime atributes for audit matters.
 
+The repository
 
 ```java
-public class TwitterAccountRepository extends JpaRepositoryAudit<TwitterAccount> {
+public class PersonRepository extends JpaRepositoryAudit<Person> {
+    public PersonRepository() {
+        super(Person, "PersistenceName");
+    }
+}
 
-    public TwitterAccountRepository() {
-        super(TwitterAccount.class, PersistenceContext.CONTEXT);
+-- or
+
+public class PersonRepository extends JpaRepository<Person> {
+
+    public PersonRepository() {
+        super(Person, "PersistenceName");
     }
 
 }
