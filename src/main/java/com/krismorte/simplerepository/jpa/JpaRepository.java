@@ -28,12 +28,9 @@ public class JpaRepository<T extends Identity> implements Repository<T> {
 
     private Class<T> type;
 
-    private AuditRule auditRule;
-
     public JpaRepository(Class<T> type, String persistenceUnitName) {
         this.type = type;
         emf = Persistence.createEntityManagerFactory(persistenceUnitName);
-        auditRule = new AuditRule();
     }
 
     @Override
