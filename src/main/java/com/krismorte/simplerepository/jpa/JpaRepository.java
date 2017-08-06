@@ -36,14 +36,6 @@ public class JpaRepository<T extends Identity> implements Repository<T> {
         auditRule = new AuditRule();
     }
 
-    public void audit(T entity) {
-        if (entity.getId() == null) {
-            auditRule.updateTime((AuditableEnitity) entity);
-        } else {
-            auditRule.createTime((AuditableEnitity) entity);
-        }
-    }
-
     @Override
     public Set<T> get() {
         List<T> resultList = run(entityManager -> {
