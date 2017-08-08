@@ -6,8 +6,6 @@
 package com.krismorte.simplerepository.jpa;
 
 
-import com.krismorte.simplerepository.audit.AuditRule;
-import com.krismorte.simplerepository.audit.AuditableEnitity;
 import com.krismorte.simplerepository.design.Repository;
 import com.krismorte.simplerepository.identity.Identity;
 import javax.persistence.EntityManager;
@@ -102,7 +100,7 @@ public class JpaRepository<T extends Identity> implements Repository<T> {
         remove(get(predicate));
     }
 
-    private <R> R run(Function<EntityManager, R> function) {
+    protected <R> R run(Function<EntityManager, R> function) {
         final EntityManager entityManager = emf.createEntityManager();
         try {
             return function.apply(entityManager);
@@ -111,14 +109,14 @@ public class JpaRepository<T extends Identity> implements Repository<T> {
         }
     }
 
-    private void run(Consumer<EntityManager> function) {
+    protected void run(Consumer<EntityManager> function) {
         run(entityManager -> {
             function.accept(entityManager);
             return null;
         });
     }
 
-    private <R> R runInTransaction(Function<EntityManager, R> function) {
+    protected <R> R runInTransaction(Function<EntityManager, R> function) {
         return run(entityManager -> {
             entityManager.getTransaction().begin();
 
@@ -130,7 +128,7 @@ public class JpaRepository<T extends Identity> implements Repository<T> {
         });
     }
 
-    private void runInTransaction(Consumer<EntityManager> function) {
+    protected void runInTransaction(Consumer<EntityManager> function) {
         runInTransaction(entityManager -> {
             function.accept(entityManager);
             return null;

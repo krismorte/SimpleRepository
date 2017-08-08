@@ -5,7 +5,6 @@
  */
 package com.krismorte.simplerepository.jpa;
 
-
 import com.krismorte.simplerepository.audit.AuditRule;
 import com.krismorte.simplerepository.audit.AuditableEnitity;
 import com.krismorte.simplerepository.design.RepositoryAudit;
@@ -44,6 +43,16 @@ public class JpaRepositoryAudit<T extends IdentityAndAudit> implements Repositor
         }
     }
 
+    public void audit(Set<T> entities) {
+        entities.forEach(entity -> {
+            if (entity.getId() == null) {
+                auditRule.updateTime((AuditableEnitity) entity);
+            } else {
+                auditRule.createTime((AuditableEnitity) entity);
+            }
+        });
+    }
+
     @Override
     public Set<T> get() {
         List<T> resultList = run(entityManager -> {
@@ -59,6 +68,8 @@ public class JpaRepositoryAudit<T extends IdentityAndAudit> implements Repositor
 
         return new HashSet<>(resultList);
     }
+    
+
 
     @Override
     public Optional<T> get(String id) {
@@ -113,7 +124,7 @@ public class JpaRepositoryAudit<T extends IdentityAndAudit> implements Repositor
         remove(get(predicate));
     }
 
-    private <R> R run(Function<EntityManager, R> function) {
+    protected <R> R run(Function<EntityManager, R> function) {
         final EntityManager entityManager = emf.createEntityManager();
         try {
             return function.apply(entityManager);
@@ -122,14 +133,14 @@ public class JpaRepositoryAudit<T extends IdentityAndAudit> implements Repositor
         }
     }
 
-    private void run(Consumer<EntityManager> function) {
+    protected void run(Consumer<EntityManager> function) {
         run(entityManager -> {
             function.accept(entityManager);
             return null;
         });
     }
 
-    private <R> R runInTransaction(Function<EntityManager, R> function) {
+    protected <R> R runInTransaction(Function<EntityManager, R> function) {
         return run(entityManager -> {
             entityManager.getTransaction().begin();
 
@@ -141,7 +152,7 @@ public class JpaRepositoryAudit<T extends IdentityAndAudit> implements Repositor
         });
     }
 
-    private void runInTransaction(Consumer<EntityManager> function) {
+    protected void runInTransaction(Consumer<EntityManager> function) {
         runInTransaction(entityManager -> {
             function.accept(entityManager);
             return null;
